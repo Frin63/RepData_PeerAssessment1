@@ -7,15 +7,46 @@ output:
 
 
 ## Loading and preprocessing the data
+load the libraries, then unzip and then read the Activity file:
+```{r}
+library(ggplot2)
+library(dplyr)
+unzip("activity.zip")
+activity<-read.csv("activity.csv")
+```
 
+print some statistics about the file
+```{r}
+summary(activity)
+
+head(activity)
+```
+
+The 'steps' column contains a rather large fraction of NA's. 
+It's a good idea to see where they occur 
+```{r}
+NA_activity<-activity[is.na(activity$steps),]
+qplot(date,interval,data=activity,color=is.na(steps))
+```
+
+it seems that only complete days are missing 
 
 
 ## What is mean total number of steps taken per day?
 
+```{r}
+activityByDay <- group_by(activity,date)
+totalStepsByDay<-summarise(activityByDay,totalsteps=sum(steps))
+mean(totalStepsByDay$totalsteps,na.rm=TRUE)
+```
 
 
 ## What is the average daily activity pattern?
-
+```{r}
+activityByInterval <- group_by(activity,interval)
+averageStepsByInterval<-summarise(activityByInterval,averagesteps=mean(steps,na.rm=TRUE))
+qplot(interval,averagesteps,data=averageStepsByInterval)
+```
 
 
 ## Imputing missing values
